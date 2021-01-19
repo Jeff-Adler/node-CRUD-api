@@ -17,15 +17,34 @@ app.post('/posts', async (req, res) => {
         await post.save()
         res.status(201).send(post)
     } catch (e) {
-        res.status(400).send()
+        res.status(400).send(e)
     }
-
-    res.status(200).send()
 })
 
 //read posts
+app.get('/posts', async (req, res) => {
+    try {
+        const posts = await Post.find()
+        res.send(posts)
+    } catch (e) {
+        res.status(500).send() 
+    }
+})
 
-//read posts
+//read post
+app.get('/posts/:id', async (req, res) => {
+    const _id = req.params.id 
+
+    try {
+        await Post.findById(_id)
+        if (!task) return res.status(404).send() 
+
+        res.send(user)
+    } catch (e) {
+        res.status(500).send() 
+    }
+})
+
 
 //update post
 
