@@ -1,4 +1,5 @@
 const express = require('express')
+const { ObjectID } = require('mongodb')
 require('./db/mongoose')
 const Post = require('./models/post')
 
@@ -34,14 +35,15 @@ app.get('/posts', async (req, res) => {
 //read post
 app.get('/posts/:id', async (req, res) => {
     const _id = req.params.id 
-
+    const id = ObjectID.createFromHexString(_id)
+    
     try {
-        await Post.findById(_id)
-        if (!task) return res.status(404).send() 
+        const post = await Post.findById(id)
+        if (!post) return res.status(404).send() 
 
-        res.send(user)
+        res.send(post)
     } catch (e) {
-        res.status(500).send() 
+        res.status(500).send(id) 
     }
 })
 
