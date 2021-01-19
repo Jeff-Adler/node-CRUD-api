@@ -35,20 +35,41 @@ app.get('/posts', async (req, res) => {
 //read post
 app.get('/posts/:id', async (req, res) => {
     const _id = req.params.id 
-    const id = ObjectID.createFromHexString(_id)
     
     try {
+        const id = ObjectID.createFromHexString(_id)
         const post = await Post.findById(id)
         if (!post) return res.status(404).send() 
 
         res.send(post)
     } catch (e) {
-        res.status(500).send(id) 
+        res.status(500).send("Could not retrieve post!") 
     }
 })
 
-
 //update post
+app.patch('/posts/:id', async (req, res) => {
+    // gets all fields to be updated in body of request
+    const updates = Object.keys(req.body)
+
+    // all fields that are permitted to be updated
+    const allowedUpdates = ['text'] 
+    
+    // checks that every field that user requests to update is allowed to be updated
+    const isValidOperation = updates.every((update) => allowedUpdates.includes(update))
+    
+    // returns error if user tries to update invalid field
+    if (!isValidOperation) return res.status(400).send({ error: 'Invalid updates!' })
+
+    try {
+        const id = ObjectID.createFromHexString(req.params.id)
+        const post = await Post.findByIdAndUpdate(id, req.body, { new: true, runValidators: true })
+        if (!post) return res.status(404).send()
+        res.send(post)
+    } catch (e) {
+        res.status(400).send(e) 
+    }
+})
 
 //delete post
 
